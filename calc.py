@@ -1,6 +1,49 @@
-def add(a, b):
-    return a + b
+name: Flake8 Check and Deploy
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
+jobs:
+  flake8-check:
+    runs-on: ubuntu-latest
 
-if __name__ == "__main__":
-    print(add(2, 3))
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Run flake8
+        run: |
+          flake8 .
+
+  # Собрать и отправить образ приложения на DockerHub
+  build:
+    runs-on: ubuntu-latest
+    needs: flake8-check
+    steps:
+      - name: Check out the repo
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v1
+
+      - name: Login to Docker
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          tags: JaeysEvans/testrepo:latest
