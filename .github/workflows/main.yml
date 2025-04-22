@@ -46,4 +46,4 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          tags: ваш_логин_на_docker_hub/testrepo:latest
+          tags: shitov/testrepo:latest
